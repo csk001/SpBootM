@@ -1,9 +1,11 @@
 package com.csk.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 用户表
@@ -25,7 +27,8 @@ public class UserInfo implements Serializable {
     private Course courseInfo;
     // 班级号
     private String classId;
-    private String loginTime;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date loginTime;
     private String description;
 
     public int getId() {
@@ -84,11 +87,11 @@ public class UserInfo implements Serializable {
         this.classId = classId;
     }
 
-    public String getLoginTime() {
+    public Date getLoginTime() {
         return loginTime;
     }
 
-    public void setLoginTime(String loginTime) {
+    public void setLoginTime(Date loginTime) {
         this.loginTime = loginTime;
     }
 

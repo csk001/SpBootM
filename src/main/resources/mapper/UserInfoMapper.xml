@@ -1,65 +1,101 @@
-<?xml version="1.0" encoding="UTF-8"?>  
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">     
-<mapper namespace="com.csk.dao.mapper.UserMapper">  
-    
- <!--  Mybatis 中$与#的区别
- 
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csk.dao.mapper.UserMapper">
 
-1 #是将传入的值当做字符串的形式，eg:select id,name,age from student where id =#{id},当前端把id值1，传入到后台的时候，就相当于 select id,name,age from student where id ='1'.
-
- 2 $是将传入的数据直接显示生成sql语句，eg:select id,name,age from student where id =${id},当前端把id值1，传入到后台的时候，就相当于 select id,name,age from student where id = 1.
-
- 3 使用#可以很大程度上防止sql注入。(语句的拼接)
-
- 4 但是如果使用在order by 中就需要使用 $.
-
- 5 在大多数情况下还是经常使用#，但在不同情况下必须使用$. 
-
-我觉得#与$的区别最大在于：#{} 传入值时，sql解析时，参数是带引号的，而${}穿入值，sql解析时，参数是不带引号的。
-
-一 : 理解mybatis中 $与#
-
-    在mybatis中的$与#都是在sql中动态的传入参数。
-
-    eg:select id,name,age from student where name=#{name}  这个name是动态的，可变的。当你传入什么样的值，就会根据你传入的值执行sql语句。
-
-二:使用$与#
-
-   #{}: 解析为一个 JDBC 预编译语句（prepared statement）的参数标记符，一个 #{ } 被解析为一个参数占位符 。
-
-   ${}: 仅仅为一个纯碎的 string 替换，在动态 SQL 解析阶段将会进行变量替换。
+    <!--  Mybatis 中$与#的区别
 
 
- eg:   select id,name,age from student where name=#{name}  - name='cy'
+   1 #是将传入的值当做字符串的形式，eg:select id,name,age from student where id =#{id},当前端把id值1，传入到后台的时候，就相当于 select id,name,age from student where id ='1'.
 
-       select id,name,age from student where name=${name}  - name=cy
--->
+    2 $是将传入的数据直接显示生成sql语句，eg:select id,name,age from student where id =${id},当前端把id值1，传入到后台的时候，就相当于 select id,name,age from student where id = 1.
 
-    <resultMap type="UserInfo" id="userResult">  
-        <id property="id" column="id" />  
-        <id property="gender" column="gender" />  
-        <id property="score" column="score" />  
-        <result property="username" column="username"/>  
-        <result property="password" column="password"/>  
-        <result property="courseId" column="courseId"/>
+    3 使用#可以很大程度上防止sql注入。(语句的拼接)
+
+    4 但是如果使用在order by 中就需要使用 $.
+
+    5 在大多数情况下还是经常使用#，但在不同情况下必须使用$.
+
+   我觉得#与$的区别最大在于：#{} 传入值时，sql解析时，参数是带引号的，而${}穿入值，sql解析时，参数是不带引号的。
+
+   一 : 理解mybatis中 $与#
+
+       在mybatis中的$与#都是在sql中动态的传入参数。
+
+       eg:select id,name,age from student where name=#{name}  这个name是动态的，可变的。当你传入什么样的值，就会根据你传入的值执行sql语句。
+
+   二:使用$与#
+
+      #{}: 解析为一个 JDBC 预编译语句（prepared statement）的参数标记符，一个 #{ } 被解析为一个参数占位符 。
+
+      ${}: 仅仅为一个纯碎的 string 替换，在动态 SQL 解析阶段将会进行变量替换。
+
+
+    eg:   select id,name,age from student where name=#{name}  - name='cy'
+
+          select id,name,age from student where name=${name}  - name=cy
+   -->
+
+    <resultMap id="userResult" type="UserInfo">
+        <id property="id" column="id"/>
+        <id property="gender" column="gender"/>
+        <id property="score" column="score"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="loginTime" column="loginTime"/>
+        <result property="description" column="description"/>
+    </resultMap>
+
+    <!-- 一对一把关联的courseid 传给course表的查询方法-->
+    <resultMap id="userAllResult" type="UserInfo">
+        <id property="id" column="id"/>
+        <id property="gender" column="gender"/>
+        <id property="score" column="score"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
         <result property="classId" column="classId"/>
         <result property="loginTime" column="loginTime"/>
         <result property="description" column="description"/>
-        <association property="courseInfo" column="courseId" javaType="Course" select="queryCourse"/>
+        <association property="courseInfo" column="courseId" select="com.csk.dao.mapper.CourseMapper.queryCourseInfo"/>
     </resultMap>
 
-      
-    <!-- user详细 -->  
-    <select id="queryUser" resultMap="userResult" parameterType="java.lang.String">  
-       <![CDATA[ 
-         select id,username,courseId,classId,password,gender,DATE_FORMAT(loginTime,'%Y-%c-%d %h:%i:%s') as loginTime,score,description from userInfo where username=#{username}
-       ]]>  
+    <!-- user概览参数对象
+    <select id="queryUser" resultMap="userResult" parameterType="UserInfo">
+        <![CDATA[
+         select id,username,password,gender,DATE_FORMAT(loginTime,'%Y-%c-%d %h:%i:%s') as loginTime,score,description from userInfo
+         where 1=1 ]]>
+        <where>
+            <if test="username !=null and username !=''"><![CDATA[ and username=#{username} ]]></if>
+            <if test="courseId !=null and courseId !=''"><![CDATA[ and courseId=#{cid} ]]></if>
+        </where>
+    </select>  -->
+    <!-- user概览参数对象 -->
+    <select id="queryUser" resultMap="userResult" parameterType="UserInfo">
+        <![CDATA[
+         select id,username,password,gender,loginTime,score,description from userInfo
+         ]]>
+        <where>
+            <if test="_parameter!=null and ''!=_parameter"><![CDATA[ and username=#{username} or courseId=#{cId}]]></if>
+        </where>
+    </select>
+
+    <!-- user详细 loginTime对应java是String的话则DATE_FORMAT(loginTime,'%Y-%c-%d %h:%i:%s') -->
+
+    <select id="queryAllUser" resultMap="userAllResult" parameterType="java.lang.String">
+        <![CDATA[
+         select id,username,password,gender,courseId,classId,loginTime,score,description from userInfo where username=#{username}
+       ]]>
     </select>
 
     <!--课程详细-->
     <select id="queryCourse" parameterType="java.lang.String" resultType="Course">
         SELECT * FROM Course WHERE cid = #{id}
     </select>
-   
+
+    <!-- 新增，返回主键 keyProperty 主键id -->
+    <insert id="addUser" parameterType="UserInfo" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[ INSERT INTO  userinfo(`gender`, `score`, `username`, `password`, `courseId`, `classId`, `loginTime`, `description`)
+        VALUES (#{gender}, #{score}, #{username}, #{password}, #{courseInfo.cid}, #{classId}, #{loginTime}, #{description}) ]]>
+    </insert>
+
 </mapper>  

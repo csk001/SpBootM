@@ -1,5 +1,6 @@
 package com.csk.controller;
 
+import com.csk.domain.Course;
 import com.csk.domain.UserInfo;
 import com.csk.service.impl.UserServiceImpl;
 import org.slf4j.Logger;
@@ -8,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -36,9 +39,9 @@ public class CustomerController {
     }
 
     @Resource
-    UserServiceImpl userService;
+    private UserServiceImpl userService;
 
-    Locale locale = LocaleContextHolder.getLocale();
+    private Locale locale = LocaleContextHolder.getLocale();
 
     @RequestMapping("/hello")
     public String hello() {
@@ -76,8 +79,25 @@ public class CustomerController {
 
     @RequestMapping("/info")
     public UserInfo info(String name) {
-        UserInfo user = userService.query(name);
-
+        UserInfo user = userService.queryALL(name);
+        LOG.info("...queryALL success");
         return user;
+    }
+
+    @RequestMapping("/courseAll")
+    public Course courseAll(String id) {
+        Course cs = userService.queryCourseALL(id);
+        LOG.info("...courseAll success");
+        return cs;
+    }
+
+    @RequestMapping("/addUser")
+    public String addUser(@RequestBody UserInfo user) {
+        LOG.info(" --> start addUser:{}", user);
+        if (user == null) {
+            return "Fail";
+        }
+        user.setLoginTime(new Date());
+        return userService.save(user);
     }
 }
