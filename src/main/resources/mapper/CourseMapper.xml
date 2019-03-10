@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.csk.dao.mapper.CourseMapper">
+
+    <resultMap id="allCourseInfo" type="com.csk.domain.Course">
+        <id column="cid" property="cid"/>
+        <id column="cname" property="cname"/>
+        <id column="teacher" property="teacher"/>
+        <!--这里把user关联的id传过去查询单个信息-->
+        <collection property="users" column="cid"
+                    select="com.csk.dao.mapper.UserMapper.queryUser"/>
+    </resultMap>
+
+    <!--课程详细-->
+    <select id="queryCourseInfo" parameterType="java.lang.String" resultType="Course">
+        SELECT * FROM Course WHERE cid = #{id}
+    </select>
+
+    <!--课程关联所有详细-->
+    <select id="queryAllCourse" parameterType="java.lang.String" resultMap="allCourseInfo">
+        SELECT * FROM Course WHERE cid = #{id}
+    </select>
+
+
+</mapper>
