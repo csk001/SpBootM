@@ -75,7 +75,8 @@
          select id,username,password,gender,loginTime,score,description from userInfo
          ]]>
         <where>
-            <if test="_parameter!=null and ''!=_parameter"><![CDATA[ and username=#{username} or courseId=#{cId}]]></if>
+            <if test="_parameter!=null and ''!=_parameter">
+                <![CDATA[ and username=#{username} or courseId=#{cId}]]></if>
         </where>
     </select>
 

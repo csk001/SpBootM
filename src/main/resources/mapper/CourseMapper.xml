@@ -15,12 +15,13 @@
 
     <!--课程详细-->
     <select id="queryCourseInfo" parameterType="java.lang.String" resultType="Course">
-        SELECT * FROM Course WHERE cid = #{id}
+        SELECT * FROM Course WHERE  cid = #{id}
     </select>
 
     <!--课程关联所有详细-->
     <select id="queryAllCourse" parameterType="java.lang.String" resultMap="allCourseInfo">
-        SELECT * FROM Course WHERE cid = #{id}
+        SELECT * FROM Course WHERE 1=1
+        <if test="_parameter!=null"> and cid = #{id}</if>
     </select>
 
 

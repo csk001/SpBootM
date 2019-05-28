@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -55,6 +56,15 @@ public class CustomerController {
         return "Hello，" + name;
     }
 
+    @RequestMapping("/null")
+    public String testNull(String value) {
+
+        if (value.equals("aaa")) {
+            return "null  in....";
+        }
+        return "error......";
+    }
+
     //	@RequestParam
 //	这个注解用来绑定单个请求数据，既可以是url中的参数，也可以是表单提交的参数和上传的文件,不能处理JSON格式
     @RequestMapping("/lang")
@@ -77,18 +87,42 @@ public class CustomerController {
         return "Hello，" + user.getUsername() + " beforeTime: " + user.getLoginTime();
     }
 
-    @RequestMapping("/info")
+    @RequestMapping("/addUserTest")
+    public String addUserTest(@RequestBody UserInfo user2) {
+        LOG.info(" ===> start addUserTest:{}", user2);
+        if (user2 == null) {
+            return "Is fail";
+        }
+        user2.setLoginTime(new Date());
+        return userService.saveTrans(user2);
+    }
+
+    @RequestMapping("/userAll")
     public UserInfo info(String name) {
+        //如果开启延迟加载，则这里只会查询user信息，不查询关联信息
         UserInfo user = userService.queryALL(name);
         LOG.info("...queryALL success");
-        return user;
+        //这里用到关联信息，所以会查询sql
+        String teacher = user.getCourseInfo().getTeacher();
+        LOG.info("...teacher:{}", teacher);
+        return null;
     }
 
     @RequestMapping("/courseAll")
-    public Course courseAll(String id) {
-        Course cs = userService.queryCourseALL(id);
+    public List<Course> courseAll(String id) {
+        List<Course> cs = userService.queryCourseALL(id);
         LOG.info("...courseAll success");
         return cs;
+    }
+
+    @RequestMapping("/addUserSqlTest")
+    public String addUserSqlTest(@RequestBody UserInfo user) {
+        LOG.info(" --> start addUserSqlTest:{}", user);
+        if (user == null) {
+            return "Fail";
+        }
+        user.setLoginTime(new Date());
+        return userService.saveSqlExce(user);
     }
 
     @RequestMapping("/addUser")

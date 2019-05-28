@@ -1,5 +1,7 @@
 package com.csk.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -8,6 +10,8 @@ import java.util.List;
  * @Date: 2019/3/6 16:01
  * @Version: 1.0
  */
+//如果是代理类，由于无法标记在属性或方法上，所以，可以标记在类声明上；也作用于反序列化时的字段解析；
+@JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler" })
 public class Course implements Serializable {
 
     private static final long serialVersionUID = -8784728410441803053L;

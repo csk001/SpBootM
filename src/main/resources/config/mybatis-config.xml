@@ -3,6 +3,11 @@
     "-//mybatis.org//DTD Config 3.0//EN"  
     "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+	<settings>
+		<!--是否开启延迟加载，默认关闭false，开启的话则true，不加载关联数据-->
+		<setting name="lazyLoadingEnabled" value="true"/>
+		<setting name="aggressiveLazyLoading" value="false"/>
+	</settings>
 	<typeAliases>
 		<typeAlias type="com.csk.domain.UserInfo" alias="UserInfo" />
 		<typeAlias type="com.csk.domain.Course" alias="Course" />
